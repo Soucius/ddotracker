@@ -2,12 +2,11 @@ import { useState } from "react";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
-  FolderKanban,
-  Settings,
   LogOut,
   Menu,
   X,
   UserCircle,
+  ClipboardList,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -35,14 +34,9 @@ const DashboardLayout = () => {
       icon: <LayoutDashboard size={20} />,
     },
     {
-      name: "Projelerim",
-      path: "/dashboard/projects",
-      icon: <FolderKanban size={20} />,
-    },
-    {
-      name: "Ayarlar",
-      path: "/dashboard/settings",
-      icon: <Settings size={20} />,
+      name: "Tedbir Listesi",
+      path: "/dashboard/measures",
+      icon: <ClipboardList size={20} />,
     },
   ];
 
@@ -107,7 +101,10 @@ const DashboardLayout = () => {
             <Menu size={24} />
           </button>
 
-          <div className="ml-auto flex items-center gap-3">
+          <Link
+            to="/dashboard/profile"
+            className="ml-auto flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition"
+          >
             <div className="text-right hidden sm:block">
               <p className="text-sm font-semibold text-gray-900">
                 {user.username}
@@ -119,7 +116,7 @@ const DashboardLayout = () => {
             <div className="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600">
               <UserCircle size={28} />
             </div>
-          </div>
+          </Link>
         </header>
 
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">

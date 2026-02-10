@@ -8,6 +8,10 @@ import SigninPage from "./pages/SigninPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import DashboardPage from "./pages/DashboardPage";
+import MeasureListPage from "./pages/MeasureListPage";
+import AddMeasurePage from "./pages/AddMeasurePage";
+import EditMeasurePage from "./pages/EditMeasurePage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -60,6 +64,10 @@ function App() {
           }
         >
           <Route index element={<DashboardPage />} />
+          <Route path="measures" element={<MeasureListPage />} />
+          <Route path="measures/edit/:id" element={<EditMeasurePage />} />
+          <Route path="add-measure" element={<AddMeasurePage />} />
+          <Route path="profile" element={<ProfilePage />} />
         </Route>
       </Routes>
     </div>
