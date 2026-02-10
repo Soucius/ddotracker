@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { ENV } from "../libs/env.js";
 import User from "../models/User.js";
+import { sendEmail } from "../libs/email.js";
 
 const generateToken = (id) => {
     return jwt.sign({ id }, ENV.JWT_SECRET, {
