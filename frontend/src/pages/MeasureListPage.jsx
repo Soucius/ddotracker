@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search, FileText } from "lucide-react";
+import { Plus, Search, FileText, Filter, Activity } from "lucide-react";
 import api from "../libs/axios.js";
 
 const MeasureListPage = () => {
@@ -8,6 +8,7 @@ const MeasureListPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterDepartment, setFilterDepartment] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
 
   const departments = [
     "Bilgi Güvenliği",
@@ -17,6 +18,13 @@ const MeasureListPage = () => {
     "Sunucu",
     "Teknik",
     "Yazılım",
+  ];
+  const statuses = [
+    "Uygulanabilir Değil",
+    "Uygulanmadı",
+    "Kısmen Uygulandı",
+    "Çoğunlukla Uygulandı",
+    "Uygulandı",
   ];
 
   useEffect(() => {
@@ -61,7 +69,9 @@ const MeasureListPage = () => {
     const matchesDepartment =
       filterDepartment === "" || m.department === filterDepartment;
 
-    return matchesSearch && matchesDepartment;
+    const matchesStatus = filterStatus === "" || m.status2026 === filterStatus;
+
+    return matchesSearch && matchesDepartment && matchesStatus;
   });
 
   return (
@@ -79,30 +89,51 @@ const MeasureListPage = () => {
         </Link>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 text-gray-400" size={20} />
 
           <input
             type="text"
-            placeholder="Tedbir No ara..."
-            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-indigo-100"
+            placeholder="Tedbir No veya Birim ara..."
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-indigo-100 transition"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
-        <select
-          className="p-2.5 rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-indigo-100 bg-white min-w-[200px]"
-          value={filterDepartment}
-          onChange={(e) => setFilterDepartment(e.target.value)}
-        >
-          <option value="">Tüm Birimler</option>
-          {departments.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
-          ))}
-        </select>
+        <div className="relative min-w-[200px]">
+          <Filter className="absolute left-3 top-3 text-gray-400" size={18} />
+
+          <select
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-indigo-100 bg-white cursor-pointer appearance-none"
+            value={filterDepartment}
+            onChange={(e) => setFilterDepartment(e.target.value)}
+          >
+            <option value="">Tüm Birimler</option>
+            {departments.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="relative min-w-[200px]">
+          <Activity className="absolute left-3 top-3 text-gray-400" size={18} />
+
+          <select
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-indigo-100 bg-white cursor-pointer appearance-none"
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="">Tüm Durumlar</option>
+            {statuses.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
@@ -137,6 +168,7 @@ const MeasureListPage = () => {
                     <td className="p-4 font-medium text-gray-900">
                       {measure.measureNumber}
                     </td>
+
                     <td className="p-4">{measure.department}</td>
 
                     <td className="p-4">
