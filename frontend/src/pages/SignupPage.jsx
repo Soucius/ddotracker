@@ -25,9 +25,10 @@ const SignupPage = () => {
 
     try {
       const response = await api.post("/users", formData);
-      const { token } = response.data;
+      const { token, user } = response.data;
 
       localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
       toast.success("Hesap başarıyla oluşturuldu!");
 
