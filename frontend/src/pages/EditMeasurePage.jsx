@@ -12,17 +12,12 @@ import api from "../libs/axios.js";
 import toast from "react-hot-toast";
 import jsPDF from "jspdf";
 import { fontBase64 } from "../fonts/TrFont.js";
-import * as pdfjsLib from "pdfjs-dist";
-import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 const EditMeasurePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
-  const [searchingPdf, setSearchingPdf] = useState(false);
 
   const departments = [
     "Bilgi Güvenliği",
@@ -96,7 +91,6 @@ const EditMeasurePage = () => {
 
   const handleDelete = async () => {
     if (!window.confirm("Bu tedbiri silmek istediğinize emin misiniz?")) return;
-
     try {
       await api.delete(`/measures/${id}`);
 
@@ -185,51 +179,14 @@ const EditMeasurePage = () => {
     doc.save(`Tedbir_${formData.measureNumber}_Revize.pdf`);
   };
 
-  const handleOpenGuide = async () => {
+  const handleOpenGuide = () => {
     if (!formData.measureNumber)
       return toast.error("Tedbir numarası girilmemiş!");
-
-    setSearchingPdf(true);
 
     const pdfUrl = "/bg_rehber.pdf";
     const searchText = formData.measureNumber.trim();
 
-    try {
-      const loadingTask = pdfjsLib.getDocument(pdfUrl);
-      const pdf = await loadingTask.promise;
-
-      let foundPage = 1;
-      let isFound = false;
-
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items.map((item) => item.str).join(" ");
-
-        if (pageText.includes(searchText)) {
-          foundPage = i;
-          isFound = true;
-
-          break;
-        }
-      }
-
-      if (isFound) {
-        toast.success(`Tedbir ${foundPage}. sayfada bulundu.`);
-      } else {
-        toast.error("Tedbir numarası rehberde bulunamadı, döküman açılıyor.");
-      }
-
-      window.open(`${pdfUrl}#page=${foundPage}`, "_blank");
-    } catch (error) {
-      console.error("PDF Arama Hatası:", error);
-
-      toast.error("Rehber taranırken hata oluştu.");
-
-      window.open(pdfUrl, "_blank");
-    } finally {
-      setSearchingPdf(false);
-    }
+    window.open(`${pdfUrl}#:~:text=${searchText}`, "_blank");
   };
 
   if (fetching) {
@@ -305,25 +262,22 @@ const EditMeasurePage = () => {
                 className="w-full p-3 rounded-lg border border-gray-200 outline-none focus:ring-2 focus:ring-indigo-100 bg-gray-50 focus:bg-white transition"
               />
 
-              <button
-                type="button"
-                onClick={handleOpenGuide}
-                disabled={searchingPdf}
-                className="flex items-center gap-2 bg-blue-50 text-blue-600 border border-blue-100 px-4 rounded-lg hover:bg-blue-100 transition font-medium whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
-                title="Otomatik olarak sayfayı bul ve aç"
-              >
-                {searchingPdf ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" />
-                    Aranıyor...
-                  </>
-                ) : (
-                  <>
-                    <BookOpen size={18} />
-                    Rehberi Aç
-                  </>
-                )}
-              </button>
+              <div className="relative group">
+                <button
+                  type="button"
+                  onClick={handleOpenGuide}
+                  className="flex items-center gap-2 bg-blue-50 text-blue-600 border border-blue-100 px-4 py-3 rounded-lg hover:bg-blue-100 transition font-medium whitespace-nowrap"
+                >
+                  <BookOpen size={18} />
+                  Rehberi Aç
+                </button>
+
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 bg-gray-800 text-white text-xs rounded-lg py-2 px-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none text-center z-10 shadow-lg">
+                  PDF açıldıktan 1-2 saniye içerisinde otomatik
+                  yönlendirileceksiniz
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-gray-800 rotate-45"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
