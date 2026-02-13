@@ -28,7 +28,6 @@ const EditMeasurePage = () => {
     "Teknik",
     "Yazılım",
   ];
-
   const statuses = [
     "Uygulanabilir Değil",
     "Uygulanmadı",
@@ -91,6 +90,7 @@ const EditMeasurePage = () => {
 
   const handleDelete = async () => {
     if (!window.confirm("Bu tedbiri silmek istediğinize emin misiniz?")) return;
+
     try {
       await api.delete(`/measures/${id}`);
 
@@ -115,6 +115,7 @@ const EditMeasurePage = () => {
     }
 
     const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 20;
     const maxLineWidth = pageWidth - margin * 2;
     let yPos = 20;
@@ -140,6 +141,12 @@ const EditMeasurePage = () => {
     yPos += 15;
 
     const addSection = (title, content) => {
+      if (yPos > pageHeight - 20) {
+        doc.addPage();
+        yPos = 20;
+        doc.setFont(myFontName);
+      }
+
       doc.setTextColor(0, 0, 0);
       doc.setFontSize(11);
       doc.text(title, margin, yPos);
@@ -147,17 +154,25 @@ const EditMeasurePage = () => {
 
       doc.setTextColor(50, 50, 50);
       doc.setFontSize(10);
+
       const contentText = content || "-";
       const splitText = doc.splitTextToSize(contentText, maxLineWidth);
 
-      doc.text(splitText, margin, yPos);
-      yPos += splitText.length * 5 + 10;
+      splitText.forEach((line) => {
+        if (yPos > pageHeight - 15) {
+          doc.addPage();
+          yPos = 20;
 
-      if (yPos > 270) {
-        doc.addPage();
-        yPos = 20;
-        doc.setFont(myFontName);
-      }
+          doc.setFont(myFontName);
+          doc.setFontSize(10);
+          doc.setTextColor(50, 50, 50);
+        }
+
+        doc.text(line, margin, yPos);
+        yPos += 5;
+      });
+
+      yPos += 5;
     };
 
     addSection("YAPILAN DEĞİŞİKLİKLER:", formData.changes);
@@ -165,16 +180,35 @@ const EditMeasurePage = () => {
     addSection("YAPILMASI GEREKENLER:", formData.todo);
     addSection("POLİTİKA:", formData.policy);
 
-    yPos += 10;
+    if (yPos > pageHeight - 40) {
+      doc.addPage();
+      yPos = 20;
+      doc.setFont(myFontName);
+    } else {
+      yPos += 5;
+    }
+
     doc.setDrawColor(150, 150, 150);
     doc.line(margin, yPos, pageWidth - margin, yPos);
     yPos += 10;
+
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(10);
 
     const footerText = `Biriminizce, yukarıda belirtilen "${formData.measureNumber}" numaralı tedbir ile ilgili tespit edilen eksikliklerin giderilmesi, yapılan değişikliklerin sisteme işlenmesi ve sürecin ilgili politikaya tam uyumlu hale getirilmesi hususunda gereğini rica ederim.`;
+
     const splitFooter = doc.splitTextToSize(footerText, maxLineWidth);
-    doc.text(splitFooter, margin, yPos);
+
+    splitFooter.forEach((line) => {
+      if (yPos > pageHeight - 15) {
+        doc.addPage();
+        yPos = 20;
+        doc.setFont(myFontName);
+        doc.setFontSize(10);
+      }
+      doc.text(line, margin, yPos);
+      yPos += 5;
+    });
 
     doc.save(`Tedbir_${formData.measureNumber}_Revize.pdf`);
   };
@@ -253,7 +287,7 @@ const EditMeasurePage = () => {
               Tedbir Numarası
             </label>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               <input
                 type="text"
                 name="measureNumber"
@@ -273,8 +307,7 @@ const EditMeasurePage = () => {
                 </button>
 
                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 bg-gray-800 text-white text-xs rounded-lg py-2 px-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none text-center z-10 shadow-lg">
-                  PDF açıldıktan 1-2 saniye içerisinde otomatik
-                  yönlendirileceksiniz
+                  PDF açıldıktan 1-2 saniye içerisinde yönlendirileceksiniz
                   <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 w-2 h-2 bg-gray-800 rotate-45"></div>
                 </div>
               </div>
@@ -336,7 +369,6 @@ const EditMeasurePage = () => {
                       ? "Yapılması Gerekenler"
                       : "Politika"}
               </label>
-
               <textarea
                 name={field}
                 rows="3"
