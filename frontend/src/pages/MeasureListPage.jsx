@@ -52,7 +52,14 @@ const MeasureListPage = () => {
     try {
       const res = await api.get("/measures");
 
-      setMeasures(res.data);
+      const sortedData = res.data.sort((a, b) => {
+        return b.measureNumber.localeCompare(a.measureNumber, undefined, {
+          numeric: true,
+          sensitivity: "base",
+        });
+      });
+
+      setMeasures(sortedData);
     } catch (error) {
       console.error("Veri hatası", error);
     } finally {
