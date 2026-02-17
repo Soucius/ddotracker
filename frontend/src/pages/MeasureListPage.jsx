@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, Search, FileText, Filter, Activity } from "lucide-react";
+import {
+  Plus,
+  Search,
+  FileText,
+  Filter,
+  Activity,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 import api from "../libs/axios.js";
 
 const MeasureListPage = () => {
@@ -9,6 +19,8 @@ const MeasureListPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterDepartment, setFilterDepartment] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const departments = [
     "Bilgi Güvenliği",
@@ -19,6 +31,7 @@ const MeasureListPage = () => {
     "Teknik",
     "Yazılım",
   ];
+
   const statuses = [
     "Uygulanabilir Değil",
     "Uygulanmadı",
@@ -30,6 +43,10 @@ const MeasureListPage = () => {
   useEffect(() => {
     fetchMeasures();
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterDepartment, filterStatus, itemsPerPage]);
 
   const fetchMeasures = async () => {
     try {
@@ -68,11 +85,24 @@ const MeasureListPage = () => {
 
     const matchesDepartment =
       filterDepartment === "" || m.department === filterDepartment;
-
     const matchesStatus = filterStatus === "" || m.status2026 === filterStatus;
 
     return matchesSearch && matchesDepartment && matchesStatus;
   });
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredMeasures.slice(
+    indexOfFirstItem,
+    indexOfLastItem,
+  );
+  const totalPages = Math.ceil(filteredMeasures.length / itemsPerPage);
+
+  const goToNextPage = () =>
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const goToPrevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+  const goToFirstPage = () => setCurrentPage(1);
+  const goToLastPage = () => setCurrentPage(totalPages);
 
   return (
     <div className="space-y-6">
@@ -136,16 +166,16 @@ const MeasureListPage = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-600">
             <thead className="bg-gray-50 text-gray-900 font-semibold border-b border-gray-200">
               <tr>
-                <th className="p-4">Tedbir No</th>
-                <th className="p-4">Birim</th>
+                <th className="p-4 w-32">Tedbir No</th>
+                <th className="p-4 w-40">Birim</th>
                 <th className="p-4">2025 Durum</th>
                 <th className="p-4">2026 Durum</th>
-                <th className="p-4">Detay</th>
+                <th className="p-4 w-20 text-center">İşlem</th>
               </tr>
             </thead>
 
@@ -156,14 +186,14 @@ const MeasureListPage = () => {
                     Yükleniyor...
                   </td>
                 </tr>
-              ) : filteredMeasures.length === 0 ? (
+              ) : currentItems.length === 0 ? (
                 <tr>
                   <td colSpan="5" className="p-6 text-center text-gray-400">
                     Kayıt bulunamadı.
                   </td>
                 </tr>
               ) : (
-                filteredMeasures.map((measure) => (
+                currentItems.map((measure) => (
                   <tr key={measure._id} className="hover:bg-gray-50 transition">
                     <td className="p-4 font-medium text-gray-900">
                       {measure.measureNumber}
@@ -179,10 +209,11 @@ const MeasureListPage = () => {
                       {getStatusBadge(measure.status2026)}
                     </td>
 
-                    <td className="p-4">
+                    <td className="p-4 text-center">
                       <Link
                         to={`/dashboard/measures/edit/${measure._id}`}
-                        className="text-indigo-600 hover:text-indigo-800 p-2 rounded hover:bg-indigo-50 inline-block"
+                        className="text-indigo-600 hover:text-indigo-800 p-2 rounded hover:bg-indigo-50 inline-block transition"
+                        title="Düzenle"
                       >
                         <FileText size={18} />
                       </Link>
@@ -193,6 +224,80 @@ const MeasureListPage = () => {
             </tbody>
           </table>
         </div>
+
+        {!loading && filteredMeasures.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-gray-200 bg-gray-50 gap-4">
+            <div className="text-sm text-gray-600">
+              Toplam{" "}
+              <span className="font-semibold">{filteredMeasures.length}</span>{" "}
+              kayıttan{" "}
+              <span className="font-semibold">{indexOfFirstItem + 1}</span> -{" "}
+              <span className="font-semibold">
+                {Math.min(indexOfLastItem, filteredMeasures.length)}
+              </span>{" "}
+              arası gösteriliyor.
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">Satır:</span>
+
+                <select
+                  value={itemsPerPage}
+                  onChange={(e) => setItemsPerPage(Number(e.target.value))}
+                  className="border border-gray-300 rounded-md text-sm p-1 focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-white cursor-pointer"
+                >
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={goToFirstPage}
+                  disabled={currentPage === 1}
+                  className="p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600"
+                  title="İlk Sayfa"
+                >
+                  <ChevronsLeft size={20} />
+                </button>
+
+                <button
+                  onClick={goToPrevPage}
+                  disabled={currentPage === 1}
+                  className="p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600"
+                  title="Önceki Sayfa"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+
+                <span className="px-3 py-1 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700">
+                  {currentPage} / {totalPages}
+                </span>
+
+                <button
+                  onClick={goToNextPage}
+                  disabled={currentPage === totalPages}
+                  className="p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600"
+                  title="Sonraki Sayfa"
+                >
+                  <ChevronRight size={20} />
+                </button>
+
+                <button
+                  onClick={goToLastPage}
+                  disabled={currentPage === totalPages}
+                  className="p-1 rounded-md hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed text-gray-600"
+                  title="Son Sayfa"
+                >
+                  <ChevronsRight size={20} />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
