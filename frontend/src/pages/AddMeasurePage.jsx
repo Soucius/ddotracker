@@ -13,10 +13,12 @@ const AddMeasurePage = () => {
     "Bilişim Altyapı",
     "Elektronik",
     "Koruma Güvenlik",
+    "İnsan Kaynakları",
     "Sunucu",
     "Teknik",
     "Yazılım",
   ];
+
   const statuses = [
     "Uygulanabilir Değil",
     "Uygulanmadı",

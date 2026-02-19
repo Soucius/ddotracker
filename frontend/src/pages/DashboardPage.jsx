@@ -25,6 +25,7 @@ const DashboardPage = () => {
     "Bilişim Altyapı",
     "Elektronik",
     "Koruma Güvenlik",
+    "İnsan Kaynakları",
     "Sunucu",
     "Teknik",
     "Yazılım",

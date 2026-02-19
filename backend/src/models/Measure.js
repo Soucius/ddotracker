@@ -9,7 +9,7 @@ const measureSchema = new mongoose.Schema({
     department: {
         type: String,
         required: [true, "Lütfen bir birim seçiniz."],
-        enum: ["Bilgi Güvenliği", "Bilişim Altyapı", "Elektronik", "Koruma Güvenlik", "Sunucu", "Teknik", "Yazılım"]
+        enum: ["Bilgi Güvenliği", "Bilişim Altyapı", "Elektronik", "Koruma Güvenlik", "İnsan Kaynakları", "Sunucu", "Teknik", "Yazılım"]
     },
     measureNumber: {
         type: String,
