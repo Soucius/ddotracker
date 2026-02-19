@@ -88,13 +88,28 @@ const DashboardLayout = () => {
         </nav>
 
         <div className="absolute bottom-0 w-full p-4 border-t border-gray-100">
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            <LogOut size={20} />
-            Çıkış Yap
-          </button>
+          <div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 w-full px-4 py-3 text-sm font-medium text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <LogOut size={20} />
+              Çıkış Yap
+            </button>
+          </div>
+
+          <div className="mt-3">
+            <span className="text-xs text-gray-500">
+              This web application created by{" "}
+              <a
+                href="https://github.com/Soucius"
+                target="_blank"
+                className="text-indigo-600"
+              >
+                <i>Soucius</i>
+              </a>
+            </span>
+          </div>
         </div>
       </aside>
 

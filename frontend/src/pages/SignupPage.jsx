@@ -177,6 +177,19 @@ const SignupPage = () => {
             >
               Şifreni mi unuttun?
             </Link>
+
+            <div className="mt-3">
+              <span className="text-xs text-gray-500">
+                This web application created by{" "}
+                <a
+                  href="https://github.com/Soucius"
+                  target="_blank"
+                  className="text-indigo-600"
+                >
+                  <i>Soucius</i>
+                </a>
+              </span>
+            </div>
           </div>
         </div>
       </div>
