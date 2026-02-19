@@ -7,6 +7,7 @@ import {
   X,
   UserCircle,
   ClipboardList,
+  HelpCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -37,6 +38,11 @@ const DashboardLayout = () => {
       name: "Tedbir Listesi",
       path: "/dashboard/measures",
       icon: <ClipboardList size={20} />,
+    },
+    {
+      name: "Destek Bildirimi",
+      path: "/dashboard/support",
+      icon: <HelpCircle size={20} />,
     },
   ];
 

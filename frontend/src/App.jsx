@@ -12,6 +12,7 @@ import MeasureListPage from "./pages/MeasureListPage";
 import AddMeasurePage from "./pages/AddMeasurePage";
 import EditMeasurePage from "./pages/EditMeasurePage";
 import ProfilePage from "./pages/ProfilePage";
+import SupportPage from "./pages/SupportPage";
 
 function App() {
   return (
@@ -68,6 +69,7 @@ function App() {
           <Route path="measures/edit/:id" element={<EditMeasurePage />} />
           <Route path="add-measure" element={<AddMeasurePage />} />
           <Route path="profile" element={<ProfilePage />} />
+          <Route path="support" element={<SupportPage />} />
         </Route>
       </Routes>
     </div>

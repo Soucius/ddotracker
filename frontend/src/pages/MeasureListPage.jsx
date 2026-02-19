@@ -119,6 +119,16 @@ const MeasureListPage = () => {
           Tedbir Takip Listesi
         </h1>
 
+        <h2 className="font-bold text-red-500">
+          <marquee direction="left">
+            İlgili tedbir maddesine atanan politikanın uyumlu olduğunu
+            düşünmüyorsanız lütfen{" "}
+            <a href="/dashboard/support" className="text-indigo-600 underline">
+              bildirin.
+            </a>
+          </marquee>
+        </h2>
+
         <Link
           to="/dashboard/add-measure"
           className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition shadow"
